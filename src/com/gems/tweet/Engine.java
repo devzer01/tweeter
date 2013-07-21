@@ -17,10 +17,6 @@ public class Engine
 	
 	private Twitter twitter = null;
 	
-	private RequestToken requestToken;
-	
-	private AccessToken accessToken;
-	
 	private Engine()
 	{
 		twitter = TwitterFactory.getSingleton();
@@ -32,50 +28,8 @@ public class Engine
 		return Engine.engine;
 	}
 	
-	public boolean showAuthUrl()
+	public Twitter getTwitter()
 	{
-		try {
-			requestToken = twitter.getOAuthRequestToken();
-		} catch (TwitterException e) {}
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("Open the following URL and grant access to your account:");
-        System.out.println(requestToken.getAuthorizationURL());
-        System.out.print("Enter the PIN(if aviailable) or just hit enter.[PIN]:");
-        String pin = null;
-        try {
-        	pin = br.readLine();
-        } catch (IOException e) {}
-        
-        try{
-            if(pin.length() > 0){
-              accessToken = twitter.getOAuthAccessToken(requestToken, pin);
-            }else{
-              accessToken = twitter.getOAuthAccessToken();
-            }
-         } catch (TwitterException te) {
-           if(401 == te.getStatusCode()){
-             System.out.println("Unable to get the access token.");
-           }else{
-             te.printStackTrace();
-           }
-         }
-	
-		return true;
+		return twitter;
 	}
-	
-//	twitter.setOAuthAccessToken(accessToken);
-//    //persist to the accessToken for future reference.
-//    //storeAccessToken((int) twitter.verifyCredentials().getId() , accessToken);
-//    Status status = twitter.updateStatus("Where is #snowden now? ");
-//    System.out.println("Successfully updated the status to [" + status.getText() + "].");
-//    System.exit(0);
-//  }
-//
-//  private static void storeAccessToken(int useId, AccessToken accessToken){
-//    //store accessToken.getToken()
-//	  System.out.println(accessToken.getToken());
-//	  System.out.println(accessToken.getTokenSecret());
-//	  System.out.println("User Id: " + accessToken.getUserId());
-//    //store accessToken.getTokenSecret()
-//  }
 }
