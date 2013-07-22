@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.gems.tweet.ConfigReader;
+
 public class Connect {
 	
 	private Connection connect = null;
@@ -12,10 +14,18 @@ public class Connect {
 	
 	private Connect() throws ClassNotFoundException, SQLException
 	{
+		ConfigReader configReader = null;
+		try {
+			configReader = new ConfigReader(ConfigReader.class.getResourceAsStream("config.properties"));
+		} catch (Exception e) {
+			
+		}
+		
 		Class.forName("com.mysql.jdbc.Driver");
 		connect = DriverManager
-		          .getConnection("jdbc:mysql://localhost/tweeter?"
-		              + "user=root&password=");
+		          .getConnection(configReader.getProperty("connectString") + "?"
+		              + "user=" + configReader.getProperty("username") 
+		              + "&password=" + configReader.getProperty("password"));
 	}
 		
 	public static Connection getConnection() throws ClassNotFoundException, SQLException

@@ -20,11 +20,21 @@ public class TweetRunner {
 		@Override
 		public void run() {
 			QuestionBag qb = new QuestionBag();
+			
+			ConfigReader configReader = null;
+			try {
+				configReader = new ConfigReader(ConfigReader.class.getResourceAsStream("config.properties"));
+			} catch (Exception e) {
+				
+			}
+			
+			int voteLimit = Integer.parseInt(configReader.getProperty("voteLimit"));
+			
 			while (stop == false) {
 				System.out.println("Checking Questions ...");
 				List<Question> questionList = TagReader.getQuestions();				
 				for (Question q : questionList) {
-					if (q.getVotes() >= 2) qb.addQuestion(q);
+					if (q.getVotes() >= voteLimit) qb.addQuestion(q);
 				}
 				try {
 					Thread.sleep(60 * 5 * 1000);
@@ -98,8 +108,15 @@ public class TweetRunner {
 
 	public static void runTweeter()
 	{
-		System.setProperty("twitter4j.oauth.consumerKey", "4C11x9v4rNMslIePfvKEA");
-    	System.setProperty("twitter4j.oauth.consumerSecret", "nFeKbAwCVvd8vWyoQi3vGqOldn8d8lja25f7q5eWI");
+		ConfigReader configReader = null;
+		try {
+			configReader = new ConfigReader(ConfigReader.class.getResourceAsStream("config.properties"));
+		} catch (Exception e) {
+			
+		}
+		
+		System.setProperty("twitter4j.oauth.consumerKey", configReader.getProperty("consumerKey"));
+    	System.setProperty("twitter4j.oauth.consumerSecret", configReader.getProperty("consumerSecret"));
 		
 		// TODO Auto-generated method stub
 		DataStore dataStore = new DataStore();

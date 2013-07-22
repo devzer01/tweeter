@@ -15,14 +15,24 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.gems.tweet.ConfigReader;
+
 public class TagReader {
 
 	private static String downloadTag()
 	{
 		URL soURL = null;
 		String html = "";
+		
+		ConfigReader configReader = null;
 		try {
-			soURL = new URL("http://stackoverflow.com/questions/tagged/php");
+			configReader = new ConfigReader(ConfigReader.class.getResourceAsStream("config.properties"));
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			soURL = new URL(configReader.getProperty("questionQueue"));
 			InputStream is = soURL.openStream();
 			html = IOUtils.toString(is, "UTF-8");
 		} catch (MalformedURLException e) {
