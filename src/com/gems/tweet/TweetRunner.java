@@ -1,11 +1,15 @@
 package com.gems.tweet;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.gems.tweet.so.Question;
 import com.gems.tweet.so.QuestionBag;
 import com.gems.tweet.so.TagReader;
 
+import twitter4j.IDs;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -72,6 +76,41 @@ public class TweetRunner {
 		}
 		
 	}
+	
+	private class UnfollowUnfollwer implements Runnable {
+
+		@Override
+		public void run()  {
+			IDs ids = null;
+			IDs friends = null;
+			Twitter twitter = Engine.getInstance().getTwitter();
+			try {
+				friends = twitter.getFollowersIDs(-1); //those who are following me
+				System.out.println("Followers Count : " + friends.getIDs().length);
+				ids = twitter.getFriendsIDs(-1); //those who i am following
+				System.out.println("Friends Count : " + ids.getIDs().length);
+			
+				long friendsArray[] = friends.getIDs();
+				
+				Map<Long, Long> friendsList = new HashMap<Long, Long>();
+				
+				for (long fid : friendsArray) {
+					friendsList.put(fid, fid);
+				}
+				
+				for (long id : ids.getIDs()) {
+					if (friendsList.get(id) == null) {
+						twitter.destroyFriendship(id);
+					}
+				}
+				
+			} catch (TwitterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		}
+		
+	}
 
 	public TweetRunner()
 	{
@@ -89,6 +128,11 @@ public class TweetRunner {
 		TweeterRunnable tr = new TweeterRunnable();
 		Thread trt = new Thread(tr);
 		trt.start();
+		
+		UnfollowUnfollwer uu = new UnfollowUnfollwer();
+		Thread tuu = new Thread(uu);
+		tuu.start();
+		
 		
 		while (tgrt.isAlive()) {
 			try {
